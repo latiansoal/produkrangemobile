@@ -1,1 +1,252 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8"><title>Berita Acara Maintenance - Kab. Bandung Barat</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#e5e7eb;font-family:"Times New Roman",serif;font-size:11pt;color:#000}
+.bar{position:sticky;top:0;z-index:5;background:#1f2937;padding:10px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.bar button{font:600 13px system-ui,sans-serif;padding:8px 14px;border:0;border-radius:6px;background:#f59e0b;cursor:pointer}
+.bar button.s{background:#e5e7eb}
+.bar button.gs{background:#10b981;color:#fff}
+.bar button.wa{background:#25d366;color:#fff}
+.hint{color:#d1d5db;font:12px system-ui;width:100%;text-align:center}
+.page{width:210mm;min-height:297mm;margin:14px auto;background:#fff;padding:12mm 14mm;box-shadow:0 2px 10px #0004}
+table{border-collapse:collapse;width:100%}
+td{border:1px solid #000;padding:3px 6px;vertical-align:middle}
+.head td{height:28mm;text-align:center;padding:4px}
+.head .t{font:700 13pt Arial,sans-serif;width:42%}
+.logo{cursor:pointer;position:relative;width:29%}
+.logo img{max-width:100%;max-height:24mm;object-fit:contain}
+.logo:hover{outline:2px dashed #f59e0b}
+.info{margin:8px 0 10px}.info td:first-child{width:32%;font-weight:700}
+.ed{display:inline-block;min-width:60px;outline:none}
+.ed:focus,td:focus{background:#fff8dc}
+.dev{position:relative;margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid #000}
+.dev p,.reason{margin:5px 0;display:flex;align-items:baseline;gap:4px;flex-wrap:wrap}
+.dev p>:first-child{display:inline-block;width:92px}
+.c{width:14px;display:inline-block}
+.dev .ed{flex:1;border-bottom:1px solid #000;min-height:1.2em}
+.dev .lines{min-height:3.8em;background:repeating-linear-gradient(transparent 0 1.25em,#000 1.25em calc(1.25em + 1px));line-height:1.35em;display:block}
+.dev .top{align-items:flex-start}
+label{margin-right:14px;cursor:pointer;white-space:nowrap}
+input[type=checkbox]{width:13px;height:13px;vertical-align:-2px;margin:0 3px 0 0}
+.fu{margin:0 6px 0 6px}
+.rm{position:absolute;right:-6px;top:-4px;border:0;background:#dc2626;color:#fff;border-radius:50%;width:20px;height:20px;cursor:pointer}
+.ttd{margin-top:14px}.ttd td{border:0;width:50%;vertical-align:top}
+.sign{height:26mm;border-bottom:1px solid #000;margin:4px 0;position:relative;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.sign img{max-height:24mm;max-width:90%}
+.sign:empty::after,.sign.empty::after{content:"klik: upload TTD";color:#aaa;font:11px system-ui}
+.photos{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.photos figure{margin:0;width:48%;position:relative}
+.photos img{width:100%;border:1px solid #000}
+.photos figcaption{font-size:10pt;text-align:center;min-height:1.2em;outline:none}
+.photos .rm{right:4px;top:4px}
+@media print{body{background:#fff}.bar,.no-print{display:none!important}.page{margin:0;box-shadow:none;width:auto;min-height:0;padding:0}
+.logo:hover{outline:none}.sign:empty::after,.sign.empty::after{content:""}@page{size:A4;margin:12mm 14mm}}
+</style></head><body>
+<div class="bar no-print">
+<button onclick="addDev()">+ Tambah Device</button>
+<button onclick="addPhoto()">+ Foto / Gambar</button>
+<button class="wa" onclick="copyWALaporan()">💬 Copy Laporan WA</button>
+<button class="gs" onclick="saveToGSheet()">📤 Simpan ke Google Sheet</button>
+<button onclick="window.print()">🖨 Simpan PDF / Cetak</button>
+<button onclick="saveWord()">📄 Simpan Word</button>
+<button onclick="saveHTML()">💾 Simpan HTML</button>
+<button class="s" onclick="if(confirm('Kosongkan semua isian?'))location.reload()">Reset</button>
+<div class="hint">Klik teks untuk mengedit • klik logo / kotak TTD untuk upload gambar • simpan HTML agar logo & isian tersimpan di file</div>
+</div>
+<div class="page" id="doc">
+<table class="head"><tr>
+<td class="logo" onclick="up(this.querySelector('img'))"><img src="data:image/png;base64,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#4120926101Z0p1) alt="Logo kiri"></td>
+<td class="t"><span contenteditable>BERITA ACARA<br>MAINTENANCE ALAT<br>MONITORING PAJAK<br>KABUPATEN BANDUNG BARAT</span></td>
+<td class="logo" onclick="up(this.querySelector('img'))"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAAC+CAIAAAD/QdcVAACK30lEQVR42ux9dZhdxfn/552Zc67fdd+4G+7u7qVIoRQpVeouVGipF35UKKWllNKW4FACwR1CcEiIE9vdZF2uH5l5f3+ce+9ulKAJ/fY+++TZnD33PXNmPvP6+w4xM97jDwMEXo/cJKgsfGK854/43+ddfQgCEQNnMiKLAVFcsvf0oz6AliDrf0u5g33c9/0J6v1Gle9joEf8j2XtKB+GlKiqgvjwAssAwsL61fK4k6p9DxRw3P99tqsIdF0aPcqfe89gSHxogVXcIYxMhjwPQiBQ54ggJYyBMZASRNAazBACQmzwOzOIhu8EoPXwbUKACEDxBqBIzfeL9wxD3IAIRMMEgSKR4FtlCkTDZJmLNwQDLv/3LUey0QsG1ze6ojVAkKI4KmPAgZ7Dw4Mfvo7NTBQYTGAz/DpCbDCr5fkPhh28iONQLkcfAIbVB/EMVZyOYI6MQWqI7BCiUR5KkfYpHje2jWyWXBfxOFsWXBfpNBEBjEiUbRtDKZICiTjn8uQ4SCQ4lyPtA4BlIxplZmSyZDSSSXZdyueH8RGJwPfhecVVjETADKeAZAUbg6EhikQQCnGwkOk0Bd+ybMSixYtDQ1T+bzpNUiIe53yenALiSc7lyPdBBDuEaIQ9b5hm8BaRCAdXwmFOZ8hoJBJMhHSafI+k4kSCg4cKgVyOXLc4+HicA5Rkc+S5SCRYKTjO8NtFImzbYIbnIZ2mSAS2zak0FYUDQ0jE41wGltZFZP83AIt5+McYRCJ84kmFlSvUy69YJxxbqKrlZ562V6+R++zljhmnn3rC7uySEyf4u+zmeQ6RxKuvqLVr1emnFlIpeuTx0G67eBMn+w8/FDrwALeiyhhNa9fIV161LIuPOdJJVpg594YnjPdn7uRBAwQILFpoNTTougbj5kna/MYCKxzmyVP8OXPCkTCfeFJh4QJr+XKlFEejfPyxDsAsqGOtePFlWylOJPjEkwrr2uT8F2zb5tNOKQwOifefsHea5U+f4T30YOiAfd2qGuP5tGKpfG2h1dqiTz7Fff01a+lSdcLxBc+lF1+2Tjq5sOB1643F6rCDnHicH3405Lp0zNHOlOl++xo5596QVJAEx6G99nRHj9W+Q9rg6WfsbJaMwf77us2t+vHHQr29Yspkf9bOnueQISx41Wprl0Q8epTeY0/vtVert1at1WvkqScV7BATwIRsWjz5tF02/YNV+ECUuff+Y5iZzTqdibHBmiVqwuiG0U0NY1saxrY0NNU27rlLHTP+dGXswL1rmbF+lZg2sb6usvGVZy1mfO2SJND8na8mylhc9YacPK4+30evz7eA5uv+GGXGvrvXLX9dBTdoB8cfWT22paHQR8zYe9e6H30nMRLNV/w8Pv8Jq/zfX/80dsXPYsw469SqWVPrmXH5D+IVsabWhoYD9q5lv7QHXJx6XHVYNX36ggpmLH1VNdU2jmttGFpPTorqqhov/0GCGXvuXLfopeJI8hk6/MCaww+qYcZl343boql3rVj+mtpn91pmzHvUltQ8/3E700OJcNP3vpYsD+lnP4xXJxonj6uviDbd8e9w+fqdN4XrKhtHNzUEL/up8ysJzZd9L16+oWOF3Hl6XSzU9KcrY8z4518jo5sain81YEZhgDaa/313ry30S2ZwbjKzHl6y9/QjPngNkhnaR6FA3/56BsCXv1LR1ibHjNagR23o0/vtVert1at1WvkqScV7BATwIRsWjz5tF02/YNV+ECUuff+Y5iZzTqdibHBmiVqwuiG0U0NY1saxrY0NNU27rlLHTP+dGXswL1rmbF+lZg2sb6usvGVZy1mfO2SJND8na8mylhc9YacPK4+30evz7eA5uv+GGXGvrvXLX9dBTdoB8cfWT22paHQR8zYe9e6H30nMRLNV/w8Pv8Jq/zfX/80dsXPYsw469SqWVPrmXH5D+IVsabWhoYD9q5lv7QHXJx6XHVYNX36ggpmLH1VNdU2jmttGFpPTorqqhov/0GCGXvuXLfopeJI8hk6/MCaww+qYcZl343boql3rVj+mtpn91pmzHvUltQ8/3E700OJcNP3vpYsD+lnP4xXJxonj6uviDbd8e9w+fqdN4XrKhtHNzUEL/up8ysJzZd9L16+oWOF3Hl6XSzU9KcrY8z4518jo5sain81YEZhgDaa/313ry30S2ZwbjKzHl6y9/QjPngNkhnaR6FA3/56BsCXv1LR1ibHjNagR23o0" alt="Logo kanan"></td>
+</tr></table>
+<table class="info">
+<tr><td contenteditable>Wajib Pajak</td><td colspan="2" class="data-input" contenteditable>&nbsp;</td></tr>
+<tr><td contenteditable>Alamat</td><td colspan="2" class="data-input" contenteditable>&nbsp;</td></tr>
+<tr><td contenteditable>Nama &amp; No HP Penanggung Jawab</td><td class="data-input" contenteditable>&nbsp;</td><td contenteditable>&nbsp;</td></tr>
+</table>
+<div class="reason"><span contenteditable>Alasan Kunjungan :</span>
+<label><input type="checkbox" value="Dashboard Monitoring"> Dashboard Monitoring</label>
+<label><input type="checkbox" value="Laporan Dinas"> Laporan Dinas</label>
+<label><input type="checkbox" value="Laporan Wajib Pajak"> Laporan Wajib Pajak</label></div>
+<div id="devs"><div class="dev">
+<button class="rm no-print" onclick="this.parentNode.remove()" title="Hapus blok">×</button>
+<p><b>Device ID</b><span class="c">:</span><span class="ed dev-id" contenteditable></span></p>
+<p>Kondisi Awal<span class="c">:</span><span class="ed dev-awal" contenteditable></span></p>
+<p>Permasalahan<span class="c">:</span><label><input type="checkbox" value="Hardware"> Hardware</label><label><input type="checkbox" value="Software"> Software</label><label><input type="checkbox" value="Lainnya"> Lainnya</label></p>
+<p class="top">Penanganan<span class="c">:</span><span class="ed lines dev-penanganan" contenteditable></span></p>
+<p>Kondisi Akhir<span class="c">:</span><label><input type="checkbox" value="Solved"> Solved</label><label><input type="checkbox" value="Pending"> Pending</label><span class="fu">Follow-Up :</span><label><input type="checkbox" value="Vendor"> Vendor</label><label><input type="checkbox" value="Dinas"> Dinas</label><label><input type="checkbox" value="Wajib Pajak"> Wajib Pajak</label></p>
+</div></div>
+<p style="margin-top:10px;text-align:justify" contenteditable>Pada Hari ini <span class="ed" id="val-hari" contenteditable style="min-width:90px;border-bottom:1px solid #000">&nbsp;</span>, tanggal <span class="ed" id="val-tgl" contenteditable style="min-width:40px;border-bottom:1px solid #000">&nbsp;</span> bulan <span class="ed" id="val-bln" contenteditable style="min-width:100px;border-bottom:1px solid #000">&nbsp;</span> tahun <b id="val-thn" contenteditable>2026</b>, telah dilakukan perawatan / perbaikan alat dari <b>Badan Pendapatan Daerah Kabupaten Bandung Barat</b> sesuai data di atas.</p>
+<table class="ttd"><tr>
+<td><b contenteditable>PETUGAS</b><div class="sign empty" onclick="up(this,1)"></div><b>Nama : </b><span id="val-petugas" contenteditable></span></td>
+<td><b contenteditable>WAJIB PAJAK</b><div class="sign empty" onclick="up(this,1)"></div><b>Nama : </b><span id="val-wp-ttd" contenteditable></span></td>
+</tr></table>
+<div class="photos" id="photos"></div>
+</div>
+<input type="file" id="f" accept="image/*" hidden>
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzAUNObCYL1xhPmFs9l5xgnPfDcpIm_GvQdoEUvxgUBXxbJR_dZZeXZB7aLwWr_MOlF/exec";
 
+const f=document.getElementById('f'),DEV=`<div class="dev">
+<button class="rm no-print" onclick="this.parentNode.remove()" title="Hapus blok">×</button>
+<p><b>Device ID</b><span class="c">:</span><span class="ed dev-id" contenteditable></span></p>
+<p>Kondisi Awal<span class="c">:</span><span class="ed dev-awal" contenteditable></span></p>
+<p>Permasalahan<span class="c">:</span><label><input type="checkbox" value="Hardware"> Hardware</label><label><input type="checkbox" value="Software"> Software</label><label><input type="checkbox" value="Lainnya"> Lainnya</label></p>
+<p class="top">Penanganan<span class="c">:</span><span class="ed lines dev-penanganan" contenteditable></span></p>
+<p>Kondisi Akhir<span class="c">:</span><label><input type="checkbox" value="Solved"> Solved</label><label><input type="checkbox" value="Pending"> Pending</label><span class="fu">Follow-Up :</span><label><input type="checkbox" value="Vendor"> Vendor</label><label><input type="checkbox" value="Dinas"> Dinas</label><label><input type="checkbox" value="Wajib Pajak"> Wajib Pajak</label></p>
+</div>`;
+
+function pick(cb){f.onchange=()=>{const r=new FileReader();r.onload=e=>cb(e.target.result);if(f.files[0])r.readAsDataURL(f.files[0]);f.value=''};f.click()}
+function up(el,box){pick(d=>{if(box){el.classList.remove('empty');el.innerHTML='<img src="'+d+'">'}else el.src=d})}
+function addDev(){document.getElementById('devs').insertAdjacentHTML('beforeend',DEV)}
+function addPhoto(){pick(d=>{document.getElementById('photos').insertAdjacentHTML('beforeend','<figure><button class="rm no-print" onclick="this.parentNode.remove()">×</button><img src="'+d+'"><figcaption contenteditable>Keterangan gambar</figcaption></figure>')})}
+
+function copyWALaporan(){
+  const infoData = document.querySelectorAll('.info .data-input');
+  const wp = infoData[0]?.innerText.trim() || "-";
+  const hari = document.getElementById('val-hari')?.innerText.trim() || "-";
+  const tgl = document.getElementById('val-tgl')?.innerText.trim() || "-";
+  const bln = document.getElementById('val-bln')?.innerText.trim() || "-";
+  const thn = document.getElementById('val-thn')?.innerText.trim() || "2026";
+  
+  let devText = "";
+  document.querySelectorAll('#devs .dev').forEach((dev, idx) => {
+    const id = dev.querySelector('.dev-id')?.innerText.trim() || "-";
+    const awal = dev.querySelector('.dev-awal')?.innerText.trim() || "-";
+    const penanganan = dev.querySelector('.dev-penanganan')?.innerText.trim() || "-";
+    
+    let statusAkhir = "SELESAI / DONE";
+    const pAkhir = dev.querySelector('p:nth-child(6)');
+    if(pAkhir){
+      const isPending = pAkhir.querySelector('input[value="Pending"]')?.checked;
+      if(isPending) statusAkhir = "PENDING";
+    }
+
+    devText += `Maintenance TappingBox : ${wp}\n`;
+    devText += `Kendala : ${awal}\n`;
+    devText += `Device ID : ${id}\n`;
+    devText += `Tax : 10%\n`;
+    devText += `Metode : Server Database\n`;
+    devText += `Keterangan :\n`;
+    
+    if(penanganan !== "-"){
+      const lines = penanganan.split('\n').filter(l => l.trim() !== "");
+      lines.forEach(line => {
+        devText += `- ${line.trim()}\n`;
+      });
+    } else {
+      devText += `- Pengecekan kondisi perangkat (power, jaringan, dan device)\n`;
+      devText += `- Pengecekan Akses\n`;
+      devText += `- Pengecekan Data Transaksi\n`;
+    }
+    
+    devText += `Hasil: Online OK\n`;
+    devText += `Status: ${statusAkhir}\n\n`;
+  });
+
+  const waMessage = `*LAPORAN HASIL PENYELESAIAN MAINTENANCE*
+
+Hari : ${hari} ${tgl} ${bln} ${thn}
+
+Assalamualaikum wr. wb.
+Selamat Pagi
+Kepada Bapak/Ibu,
+
+Berikut kami sampaikan hasil penyelesaian maintenance untuk lokasi berikut :
+
+${devText.trim()}
+
+Demikian laporan ini kami sampaikan.
+Terima kasih atas bantuan dan kerjasamanya`;
+
+  navigator.clipboard.writeText(waMessage).then(() => {
+    alert(" Teks laporan WhatsApp berhasil disalin ke Clipboard!\n\nSilakan 'Paste / Tempel' di grup WhatsApp.");
+  }).catch(err => {
+    prompt("Gagal menyalin otomatis. Silakan salin teks di bawah ini:", waMessage);
+  });
+}
+
+function saveToGSheet(){
+  const infoData = document.querySelectorAll('.info .data-input');
+  const alasanList = Array.from(document.querySelectorAll('.reason input[type=checkbox]:checked')).map(x => x.value);
+  
+  const deviceList = [];
+  document.querySelectorAll('#devs .dev').forEach(dev => {
+    const id = dev.querySelector('.dev-id')?.innerText.trim() || "";
+    const awal = dev.querySelector('.dev-awal')?.innerText.trim() || "";
+    const masalah = Array.from(dev.querySelectorAll('p:nth-child(4) input[type=checkbox]:checked')).map(x => x.value);
+    const penanganan = dev.querySelector('.dev-penanganan')?.innerText.trim() || "";
+    
+    const pAkhir = dev.querySelector('p:nth-child(6)');
+    const akhir = [];
+    const followUp = [];
+    if(pAkhir){
+      pAkhir.querySelectorAll('input[type=checkbox]:checked').forEach(cb => {
+        if(["Solved", "Pending"].includes(cb.value)) akhir.push(cb.value);
+        else followUp.push(cb.value);
+      });
+    }
+
+    deviceList.push({
+      id: id,
+      kondisiAwal: awal,
+      permasalahan: masalah,
+      penanganan: penanganan,
+      kondisiAkhir: akhir,
+      followUp: followUp
+    });
+  });
+
+  const payload = {
+    timestamp: new Date().toLocaleString("id-ID"),
+    wajibPajak: infoData[0]?.innerText.trim() || "",
+    alamat: infoData[1]?.innerText.trim() || "",
+    penanggungJawab: infoData[2]?.innerText.trim() || "",
+    alasanKunjungan: alasanList,
+    devices: deviceList,
+    hari: document.getElementById('val-hari')?.innerText.trim() || "",
+    tanggal: document.getElementById('val-tgl')?.innerText.trim() || "",
+    bulan: document.getElementById('val-bln')?.innerText.trim() || "",
+    tahun: document.getElementById('val-thn')?.innerText.trim() || "",
+    namaPetugas: document.getElementById('val-petugas')?.innerText.trim() || "",
+    namaWajibPajak: document.getElementById('val-wp-ttd')?.innerText.trim() || ""
+  };
+
+  const btn = event.target;
+  btn.disabled = true;
+  btn.innerText = "⏳ Menyimpan...";
+
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  }).then(() => {
+    alert("Data berhasil dikirim ke Google Sheet!");
+    btn.disabled = false;
+    btn.innerText = "📤 Simpan ke Google Sheet";
+  }).catch(err => {
+    alert("Gagal menyimpan data: " + err);
+    btn.disabled = false;
+    btn.innerText = "📤 Simpan ke Google Sheet";
+  });
+}
+
+function saveHTML(){
+ document.querySelectorAll('input[type=checkbox]').forEach(x=>x.checked?x.setAttribute('checked',''):x.removeAttribute('checked'));
+ const h='<!DOCTYPE html>\n'+document.documentElement.outerHTML;
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([h],{type:'text/html'}));a.download='Form_Maintenance_Bandung_Barat.html';a.click();
+}
+function saveWord(){
+ const c=document.getElementById('doc').cloneNode(true);
+ const src=document.getElementById('doc').querySelectorAll('input[type=checkbox]');
+ c.querySelectorAll('input[type=checkbox]').forEach((x,i)=>x.replaceWith(src[i].checked?'\u2611 ':'\u2610 '));
+ c.querySelectorAll('.no-print').forEach(x=>x.remove());
+ c.querySelectorAll('[contenteditable]').forEach(x=>x.removeAttribute('contenteditable'));
+ const css='body{font-family:"Times New Roman";font-size:11pt}table{border-collapse:collapse;width:100%}.head td,.info td{border:1px solid #000;padding:4px}.head td{text-align:center}.t{font:bold 13pt Arial}.ttd td{width:50%;vertical-align:top}.sign{height:70px;border-bottom:1px solid #000}.sign img{max-height:65px}.head img{max-height:80px}.photos img{width:300px}.dev{border-bottom:1px solid #000;margin-bottom:6px}.dev p{margin:6px 0}.c{padding:0 6px}';
+ const h='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><style>'+css+'@page{size:A4;margin:1.5cm}</style></head><body>'+c.innerHTML+'</body></html>';
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+h],{type:'application/msword'}));a.download='Berita_Acara_Maintenance.doc';a.click();
+}
+</script></body></html>
